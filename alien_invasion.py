@@ -136,6 +136,10 @@ class AlienInvasion:
             self._create_fleet()
             self.settings.increase_speed()
 
+            # Increase level.
+            self.stats.level += 1
+            self.sb.prep_level()
+
     def _update_aliens(self):
         """
         Check if the fleet is at an edge,
@@ -168,14 +172,17 @@ class AlienInvasion:
         """Start a new game when the player click Play."""
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.stats.game_active:
-            # Reset the game settings
+
+            # Reset the game stats
             self.stats.reset_stats()
             self.stats.game_active = True
             self.sb.prep_score()
+            self.sb.prep_level()
+            self.sb.prep_ships()
 
             # Get rid of any remaining aliens and bullets.
             self.aliens.empty()
-            self.aliens.empty()
+            self.bullets.empty()
 
             # Create a new fleet and center the ship.
             self._create_fleet()
@@ -227,9 +234,10 @@ class AlienInvasion:
 
     def _ship_hit(self):
         """Respond to the ship being hit by an alien."""
-        if self.stats.ship_left > 0:
-            # Decrement ships left.
-            self.stats.ship_left -= 1
+        if self.stats.ships_left > 0:
+            # Decrement ships left, and update scoreboard.
+            self.stats.ships_left -= 1
+            self.sb.prep_ships()
 
             # Get rid of any remaining aliens and bullets.
             self.aliens.empty()
